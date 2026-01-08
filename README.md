@@ -1,3 +1,4 @@
+```text
 docker/
 ├── core/
 │   ├── docker-compose.yml   # deunhealth + watchtower
@@ -18,3 +19,4 @@ docker/
 └── utilities/
     ├── docker-compose.yml   # keepassxc
     └── README.md
+```
