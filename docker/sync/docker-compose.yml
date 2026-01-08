@@ -1,0 +1,17 @@
+services:
+  syncthing:
+    image: lscr.io/linuxserver/syncthing
+    container_name: syncthing
+    hostname: docker
+    ports:
+      - 8384:8384       # Web UI
+      - 22000:22000/tcp # Sync
+      - 22000:22000/udp # QUIC
+      - 21027:21027/udp # Local discovery
+    volumes:
+      - ${CONTAINER_ROOT}/syncthing/config:/config
+      - ${OBSIDIAN_DATA}:/vaults # Obsidian data stored on mnt
+    env_file:
+      - ../_shared/common.env
+      - .env
+    restart: unless-stopped

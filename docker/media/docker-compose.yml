@@ -1,0 +1,52 @@
+services:
+  filebot:
+    image: jlesage/filebot
+    container_name: filebot
+    ports:
+      - 5800:5800
+    volumes:
+      - ${CONTAINER_ROOT}/filebot:/config
+      - ${MEDIA_ROOT}:/storage
+    env_file:
+      - ../_shared/common.env
+      - .env
+    restart: unless-stopped
+
+  tautulli:
+    image: ghcr.io/tautulli/tautulli
+    container_name: tautulli
+    ports:
+      - 8181:8181
+    volumes:
+      - ${CONTAINER_ROOT}/tautulli:/config
+    env_file:
+      - ../_shared/common.env
+      - .env
+    restart: unless-stopped
+
+  shinkro:
+    image: ghcr.io/varoop/shinkro:latest
+    container_name: shinkro
+    user: ${PUID}:${PGID}
+    ports:
+      - 7011:7011
+    volumes:
+      - ${CONTAINER_ROOT}/shinkro/config:/config
+    env_file:
+      - ../_shared/common.env
+      - .env
+    restart: unless-stopped
+
+  overseerr:
+    image: sctx/overseerr:latest
+    container_name: overseerr
+    ports:
+      - 5055:5055
+    volumes:
+      - ${CONTAINER_ROOT}/overseerr/config:/app/config
+    env_file:
+      - ../_shared/common.env
+      - .env
+    environment:
+      LOG_LEVEL: debug
+    restart: unless-stopped

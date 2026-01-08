@@ -1,0 +1,25 @@
+services:
+  deunhealth:
+    image: qmcgaw/deunhealth
+    container_name: deunhealth
+    network_mode: none
+    restart: always
+    env_file:
+      - ../_shared/common.env
+    environment:
+      - LOG_LEVEL=info
+      - HEALTH_SERVER_ADDRESS=127.0.0.1:9999
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  watchtower:
+    image: nickfedor/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    env_file:
+      - ../_shared/common.env
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 0 4 * * * # daily at 4 am
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
