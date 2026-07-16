@@ -12,4 +12,15 @@ services:
       - ../_shared/common.env
       - .env
     restart: unless-stopped
-      #test
+  nginx:
+    container_name: nginx
+    image: docker.io/jc21/nginx-proxy-manager:latest
+    restart: unless-stopped
+    #network_mode: host # hopefully fixes slow connection issue :/ ps..wasn't a slow connection issue
+    ports:
+      - 800:80
+      - 81:81
+      - 443:443
+    volumes:
+      - ${CONTAINER_ROOT}/nginx/data:/data
+      - ${CONTAINER_ROOT}/nginx/letsencrypt:/etc/letsencrypt
