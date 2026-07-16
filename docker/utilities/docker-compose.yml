@@ -10,13 +10,14 @@ services:
       - ${CONTAINER_ROOT}/ASF/logs:/app/logs
     env_file:
       - ../_shared/common.env
-      - .env
     restart: unless-stopped
   nginx:
     container_name: nginx
     image: docker.io/jc21/nginx-proxy-manager:latest
     restart: unless-stopped
     #network_mode: host # hopefully fixes slow connection issue :/ ps..wasn't a slow connection issue
+    env_file:
+      - ../_shared/common.env
     ports:
       - 800:80
       - 81:81
