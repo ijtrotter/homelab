@@ -12,3 +12,4 @@ services:
       - ../_shared/common.env
       - .env
     restart: unless-stopped
+      #test
