@@ -1,11 +1,5 @@
 apiVersion: 1
 
-# Drop any previously stored entry (e.g. one auto-created without our pinned uid)
-# so the datasource below always provisions cleanly. Recreated on every startup.
-deleteDatasources:
-  - name: Prometheus
-    orgId: 1
-
 datasources:
   - name: Prometheus
     uid: prometheus
