@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+
+scrape_configs:
+  # Translated TrueNAS metrics (pushed to graphite_exporter on 9109,
+  # re-exposed in Prometheus format on 9108)
+  - job_name: truenas
+    honor_labels: true # keep the instance label set by the TrueNAS exporter hostname
+    static_configs:
+      - targets: ["graphite_exporter:9108"]
+
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
