@@ -51,16 +51,45 @@ Then check `http://<this-server-ip>:9090/targets` — the `truenas` job should b
 
 ## Dashboards
 
-Grafana is at `http://<this-server-ip>:3000` with the Prometheus data source already
-provisioned. Import the ready-made dashboards from the
+Grafana is at `http://<this-server-ip>:3000` with the Prometheus data source and a
+**TrueNAS Disk Usage** dashboard auto-provisioned from
+`grafana/provisioning/dashboards/` (pool % full, free space, capacity over time,
+per-dataset growth). Edit the JSON and Grafana picks it up within 30s; adding a
+new provisioning file requires `docker compose restart grafana`.
+
+Optionally import the ready-made dashboards from the
 [truenas-graphite-to-prometheus](https://github.com/Supporterino/truenas-graphite-to-prometheus)
 repo (`dashboards/` folder): Dashboards → New → Import → Upload JSON file.
-Pool/disk capacity panels use the `truenas_zfs_pool_*` metrics — see `METRICS.md`
-in that repo for current metric names.
 
-## Version note
+## Pool capacity metrics (netdata.conf fix)
 
-TrueNAS SCALE **25.04+** dropped some default Netdata metrics; the mapping file's
-maintainer requires copying a custom `netdata.conf` to `/etc/netdata/netdata.conf`
-on the TrueNAS host (reapply after every TrueNAS update — it gets overwritten).
-See the repo README. On 24.04/24.10 this is not needed.
+Pool/dataset fill level comes from Netdata's `diskspace` plugin (per-mountpoint
+charts under `/mnt/<pool>`), mapped to `disk_bytes_used` / `disk_bytes_avail`.
+TrueNAS's stock Netdata config doesn't export these, so the custom `netdata.conf`
+from the mapping-file repo must be installed on the TrueNAS host — plus two extra
+fixes needed on older TrueNAS releases: the config's state/cache dirs
+(`/var/db/system/netdata/ix_state`, `ix_cache`) don't exist and must be created,
+and the stock netdata systemd unit runs with `ProtectSystem=full`, so a drop-in
+(`zz-readwrite.conf` with `ReadWritePaths=/var/db/system/netdata`) is required or
+netdata crash-loops with "Read-only file system".
+
+All three steps are captured in [`truenas/fix-netdata.sh`](truenas/fix-netdata.sh) —
+copy it to the TrueNAS host and run as root.
+
+TrueNAS **wipes these customizations on every update** — rerun the script after
+each upgrade.
+
+Values are in **GiB** (see the `unit` label), not bytes. Mountpoints are
+slugified and lowercased (`/mnt/Atlas2/media` -> `_mnt_atlas2_media`).
+
+Useful queries (per-mount `used` only counts that dataset's own data, so pool %
+full sums all of the pool's datasets):
+
+```promql
+# Pool free space (GiB)
+disk_bytes_avail{mountpoint="_mnt_atlas2"}
+
+# Pool % full (approximate; excludes snapshot-only space)
+100 * sum(disk_bytes_used{mountpoint=~"_mnt_atlas2.*"})
+  / (sum(disk_bytes_used{mountpoint=~"_mnt_atlas2.*"}) + sum(disk_bytes_avail{mountpoint="_mnt_atlas2"}))
+```

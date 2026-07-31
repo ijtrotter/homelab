@@ -1,0 +1,189 @@
+{
+  "uid": "truenas-disk-usage",
+  "title": "TrueNAS Disk Usage",
+  "tags": ["truenas", "storage"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1m",
+  "time": { "from": "now-7d", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "gauge",
+      "title": "Atlas2 pool full",
+      "gridPos": { "h": 7, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * sum(disk_bytes_used{mountpoint=~\"_mnt_atlas2.*\"}) / (sum(disk_bytes_used{mountpoint=~\"_mnt_atlas2.*\"}) + sum(disk_bytes_avail{mountpoint=\"_mnt_atlas2\"}))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 80 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Atlas2 free space",
+      "gridPos": { "h": 7, "w": 9, "x": 6, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "disk_bytes_avail{mountpoint=\"_mnt_atlas2\"}",
+          "legendFormat": "Free"
+        }
+      ],
+      "options": { "graphMode": "area", "colorMode": "value" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "gbytes",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 2048 },
+              { "color": "green", "value": 5120 }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Atlas2 used",
+      "gridPos": { "h": 7, "w": 9, "x": 15, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(disk_bytes_used{mountpoint=~\"_mnt_atlas2.*\"})",
+          "legendFormat": "Used"
+        }
+      ],
+      "options": { "graphMode": "area", "colorMode": "value" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "gbytes",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{ "color": "blue", "value": null }]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Pool capacity over time (used + free = total)",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 7 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(disk_bytes_used{mountpoint=~\"_mnt_atlas2.*\"})",
+          "legendFormat": "Used"
+        },
+        {
+          "refId": "B",
+          "expr": "disk_bytes_avail{mountpoint=\"_mnt_atlas2\"}",
+          "legendFormat": "Free"
+        }
+      ],
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "list", "placement": "bottom" }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "gbytes",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 25,
+            "stacking": { "mode": "normal", "group": "A" },
+            "showPoints": "never"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Used" },
+            "properties": [
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Free" },
+            "properties": [
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "#9d9d9d" } }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Used by dataset",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "disk_bytes_used{mountpoint=\"_mnt_atlas2_media\"}",
+          "legendFormat": "media"
+        },
+        {
+          "refId": "B",
+          "expr": "disk_bytes_used{mountpoint=\"_mnt_atlas2_applications_plex\"}",
+          "legendFormat": "plex app data"
+        },
+        {
+          "refId": "C",
+          "expr": "sum(disk_bytes_used{mountpoint=~\"_mnt_atlas2_ix_applications.*\"})",
+          "legendFormat": "ix-applications (system)"
+        }
+      ],
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "list", "placement": "bottom" }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "gbytes",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 0,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      }
+    }
+  ]
+}
