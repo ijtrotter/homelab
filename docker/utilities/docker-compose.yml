@@ -9,6 +9,5 @@ services:
       - ${CONTAINER_ROOT}/ASF/plugins:/app/plugins
       - ${CONTAINER_ROOT}/ASF/logs:/app/logs
     env_file:
-      - ../_shared/common.env
       - .env
     restart: unless-stopped

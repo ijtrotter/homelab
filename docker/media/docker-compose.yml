@@ -8,7 +8,6 @@ services:
       - ${CONTAINER_ROOT}/filebot:/config
       - ${MEDIA_ROOT}:/storage
     env_file:
-      - ../_shared/common.env
       - .env
     restart: unless-stopped
 
@@ -20,7 +19,6 @@ services:
     volumes:
       - ${CONTAINER_ROOT}/tautulli:/config
     env_file:
-      - ../_shared/common.env
       - .env
     restart: unless-stopped
 
@@ -33,7 +31,6 @@ services:
     volumes:
       - ${CONTAINER_ROOT}/shinkro/config:/config
     env_file:
-      - ../_shared/common.env
       - .env
     restart: unless-stopped
 
@@ -45,7 +42,6 @@ services:
     volumes:
       - ${CONTAINER_ROOT}/overseerr/config:/app/config
     env_file:
-      - ../_shared/common.env
       - .env
     environment:
       LOG_LEVEL: debug

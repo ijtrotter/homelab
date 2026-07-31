@@ -12,6 +12,5 @@ services:
       - ${CONTAINER_ROOT}/syncthing/config:/config
       - ${OBSIDIAN_DATA}:/vaults # Obsidian data stored on mnt
     env_file:
-      - ../_shared/common.env
       - .env
     restart: unless-stopped

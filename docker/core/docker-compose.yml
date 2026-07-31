@@ -5,7 +5,7 @@ services:
     network_mode: none
     restart: always
     env_file:
-      - ../_shared/common.env
+      - .env
     environment:
       - LOG_LEVEL=info
       - HEALTH_SERVER_ADDRESS=127.0.0.1:9999
@@ -17,7 +17,7 @@ services:
     container_name: watchtower
     restart: unless-stopped
     env_file:
-      - ../_shared/common.env
+      - .env
     environment:
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_SCHEDULE=0 0 4 * * * # daily at 4 am
