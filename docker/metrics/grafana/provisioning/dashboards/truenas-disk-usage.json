@@ -97,7 +97,7 @@
     {
       "id": 4,
       "type": "timeseries",
-      "title": "Pool capacity over time (used + free = total)",
+      "title": "Pool capacity over time",
       "gridPos": { "h": 9, "w": 24, "x": 0, "y": 7 },
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
@@ -105,11 +105,6 @@
           "refId": "A",
           "expr": "sum(disk_bytes_used{mountpoint=~\"_mnt_atlas2.*\"})",
           "legendFormat": "Used"
-        },
-        {
-          "refId": "B",
-          "expr": "disk_bytes_avail{mountpoint=\"_mnt_atlas2\"}",
-          "legendFormat": "Free"
         }
       ],
       "options": {
@@ -119,7 +114,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "gbytes",
-          "min": 0,
+          "decimals": 3,
           "custom": {
             "drawStyle": "line",
             "lineWidth": 2,
