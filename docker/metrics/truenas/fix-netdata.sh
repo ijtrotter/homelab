@@ -1,7 +1,4 @@
 #!/bin/bash
-# Reapply the Netdata customizations that TrueNAS wipes on every update.
-# Run as root ON THE TRUENAS HOST (not the docker server) after each TrueNAS upgrade.
-#
 # Restores:
 #   1. The custom netdata.conf (enables the diskspace plugin -> disk_bytes_used/avail,
 #      i.e. pool capacity metrics; TrueNAS's stock config omits it)
@@ -14,8 +11,6 @@ CONF_URL="https://raw.githubusercontent.com/Supporterino/truenas-graphite-to-pro
 curl -fsSL -o /etc/netdata/netdata.conf "$CONF_URL"
 chown root:root /etc/netdata/netdata.conf
 
-# Old netdata builds (TrueNAS <= 24.04 ships v1.37) don't chart ZFS mounts under
-# /mnt unless forced; without this the disk_bytes_* metrics only cover OS paths.
 cat >> /etc/netdata/netdata.conf <<'EOF'
 
 [plugin:proc:diskspace]
